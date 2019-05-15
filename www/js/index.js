@@ -17,13 +17,14 @@
 * under the License.
 */
 $(document).ready(function(){
+    console.log(localStorage.getItem("time"));
     var round = 0
     var rate = 0
     var avgrate = 0
-    var time = 300
+    var time = 0
     var min = 0
     var sec = 0
-    var updown = 1
+    var updown = 0
     var interval = 0
     var strokerate = 0
     var ratetimer = 0
@@ -31,41 +32,82 @@ $(document).ready(function(){
     var x = 0
     var y = 0
     var z = 0
+    var custominterval = 0
+    var stroketimer = 0
 
 
-   //  strokerate = setInterval(strokerate,10);
-   //  function strokerate(){
-   //      ratetimer = ratetimer+.01
+$("#settingSubmit").click(function(){
+    // console.log(document.getElementById("mins").value);
+    custominterval = parseInt(document.getElementById("mins").value)*60+parseInt(document.getElementById("secs").value);
+    time = custominterval;
+    // console.log(time)
+    if(time !== 0){
+    updown = 1
+};
+else{
+    updown = 1
+};
+    localStorage.setItem("time", time);
+    localStorage.setItem("upordown", updown);
+});
 
-   //      function watchAcceleration() {
-   //          var accelerometerOptions = {
-   //            frequency: 3000
-   //        }}
-   //        var watchID = navigator.accelerometer.watchAcceleration(
-   //            accelerometerSuccess, accelerometerError, accelerometerOptions);
-
-   //        function accelerometerSuccess(acceleration) {
-            // if((acceleration.x+acceleration.y+acceleration.z)>12){
-            //     rate = 60/ratetimer
-            //     ratetimer = 0
-            //     alert(rate)
-            //     $(".ratt").html("<p>"+rate+"</p>")
-   //          }
-   //      };
-   //  };
-
-   //  setTimeout(function() {
-   //     navigator.accelerometer.clearWatch(watchID);
-   // }, 10000);
+time = localStorage.getItem("time");
+updown = localStorage.getItem("upordown");
 
    $(".time").html("<p>0:00</p>")
-   $(".ratt").html("<p>"+ ratetimer+"</p>")
+   $(".ratt").html("<p>0</p>")
+   
 
    $(".start").click(function(){
-    // check if counting up
+    // custominterval = document.getElementById("mins")*60+document.getElementById("mins");
+    // alert(document.getElementById("mins"));
     
+    // check if counting up
     if (timerGoing == false) {
     // start timer up
+    // stroketimer = setInterval(stroketimerf,10);
+    // function stroketimerf(){
+    //     ratetimer1 = ratetimer + .01
+    //     ratetimer = ratetimer1
+    // }
+
+
+
+
+ var accelerometerOptions = {
+    frequency: 1000
+};
+var watchID = navigator.accelerometer.watchAcceleration(
+  accelerometerSuccess, accelerometerError, accelerometerOptions);
+
+function accelerometerSuccess(acceleration) {
+  // alert('Acceleration X: ' + x + '\n' +
+  //  'Acceleration Y: ' + y + '\n' +
+  //  'Acceleration Z: ' + z + '\n' +
+  //  'Timestamp: '      + acceleration.timestamp + '\n');
+    x = acceleration.x;
+    y = acceleration.y;
+    z = acceleration.z;
+    ratetimer = ratetimer + 1;
+    if((Math.abs(x)+Math.abs(y)+Math.abs(z))>15){
+        rate = 60/ratetimer;
+        $(".ratt").html("<p>"+rate+"</p>");
+        ratetimer = 0;
+    };
+
+
+};
+
+function accelerometerError() {
+  alert('onError!');
+};
+
+
+
+
+
+
+
     interval = setInterval(increment,1000);
     function increment(){
         if (updown == 0){
@@ -105,72 +147,13 @@ else {
     timerGoing = false;
 }
 });
-    // attempt to stop timer
-
-// check if counting down
+ 
 
 
 
-// function watchAcceleration() {
-//    var accelerometerOptions = {
-//       frequency: 3000
-//    }
-//    var watchID = navigator.accelerometer.watchAcceleration(
-//       accelerometerSuccess, accelerometerError, accelerometerOptions);
-
-//    function accelerometerSuccess(acceleration) {
-    // if((acceleration.x+acceleration.y+acceleration.z)>12){
-    // rate = 60/ratetimer
-    // ratetimer = 0
-    // alert(rate)
-    // $(".ratt").html("<p>"+rate+"</p>")
-// }
-
-//       setTimeout(function() {
-//          navigator.accelerometer.clearWatch(watchID);
-//       }, 10000);
-
-// function accelerometerError() {
-//       alert('onError!');
-//   };
-
-function watchAcceleration() {
- var accelerometerOptions = {
-    frequency: 100
-}
-var watchID = navigator.accelerometer.watchAcceleration(
-  accelerometerSuccess, accelerometerError, accelerometerOptions);
-
-function accelerometerSuccess(acceleration) {
-  alert('Acceleration X: ' + x + '\n' +
-   'Acceleration Y: ' + y + '\n' +
-   'Acceleration Z: ' + z + '\n' +
-   'Timestamp: '      + acceleration.timestamp + '\n');
-  x = acceleration.x
-  y = acceleration.y
-  z = acceleration.z
-  // ratetimer = math.round(math.sqrt(math.pow(x,2))+math.sqrt(math.pow(y,2))+math.sqrt(math.pow(z,2)))
-  $(".ratt").html("<p>"+y+"</p>")
-//   if((math.sqrt(math.pow(acceleration.x,2))+math.sqrt(math.pow(acceleration.y,2))+math.sqrt(math.pow(acceleration.z,2)))>18){
-//    rate = 1000/ratetimer
-//    ratetimer = 0
-//    $(".ratt").html("<p>"+rate+"</p>")
-// }
-
-setTimeout(function() {
-   navigator.accelerometer.clearWatch(watchID);
-}, 10000);
-};
-
-function accelerometerError() {
-  alert('onError!');
-};
-
-}
 
 
-
-document.getElementById("start").addEventListener("click", watchAcceleration);
+// document.getElementById("start").addEventListener("click", watchAcceleration);
 
 
 });
