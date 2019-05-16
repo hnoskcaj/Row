@@ -17,11 +17,10 @@
 * under the License.
 */
 $(document).ready(function(){
-    console.log(localStorage.getItem("time"));
     var round = 0
     var rate = 0
     var avgrate = 0
-    var time = 0
+    var time;
     var min = 0
     var sec = 0
     var updown = 0
@@ -34,26 +33,36 @@ $(document).ready(function(){
     var z = 0
     var custominterval = 0
     var stroketimer = 0
+    var a = 0
+    var b = 0
+    var c = 0
+    var rest = 0
+    var restcheck = 0
 
 
-$("#settingSubmit").click(function(){
-    // console.log(document.getElementById("mins").value);
-    custominterval = parseInt(document.getElementById("mins").value)*60+parseInt(document.getElementById("secs").value);
-    time = custominterval;
-    // console.log(time)
-    if(time !== 0){
-    updown = 1
-};
-else{
-    updown = 1
-};
-    localStorage.setItem("time", time);
-    localStorage.setItem("upordown", updown);
-});
+    $("#settingSubmit").click(function(){
+        // console.log(document.getElementById("mins").value);
+        custominterval = parseInt(document.getElementById("mins").value)*60+parseInt(document.getElementById("secs").value);
+        rest = parseInt(document.getElementById("rmins").value)*60+parseInt(document.getElementById("rsecs").value);
+        time = custominterval;
+        // console.log(time)
 
-time = localStorage.getItem("time");
-updown = localStorage.getItem("upordown");
+        updown = 1
+        localStorage.setItem("time", time);
+        localStorage.setItem("rest", rest);
+        console.log(rest)
+        // localStorage.setItem("upordown", updown);
+    });
 
+    time = localStorage.getItem("time");
+    rest = localStorage.getItem("rest");
+    // updown = localStorage.getItem("upordown");
+
+    if (time > 0) {
+        updown = 1;
+    } else {
+        updown = 0;
+    }
    $(".time").html("<p>0:00</p>")
    $(".ratt").html("<p>0</p>")
    
@@ -75,7 +84,7 @@ updown = localStorage.getItem("upordown");
 
 
  var accelerometerOptions = {
-    frequency: 1000
+    frequency: 200
 };
 var watchID = navigator.accelerometer.watchAcceleration(
   accelerometerSuccess, accelerometerError, accelerometerOptions);
@@ -88,12 +97,22 @@ function accelerometerSuccess(acceleration) {
     x = acceleration.x;
     y = acceleration.y;
     z = acceleration.z;
-    ratetimer = ratetimer + 1;
-    if((Math.abs(x)+Math.abs(y)+Math.abs(z))>15){
+    ratetimer = ratetimer + .2;
+    
+    a = b+3;
+    b = c-3;
+    c = (Math.abs(x)+Math.abs(y)+Math.abs(z));
+
+    if(a<b && b>c){
         rate = 60/ratetimer;
         $(".ratt").html("<p>"+rate+"</p>");
         ratetimer = 0;
     };
+    // if((Math.abs(x)+Math.abs(y)+Math.abs(z))>15){
+    //     rate = 60/ratetimer;
+    //     $(".ratt").html("<p>"+rate+"</p>");
+    //     ratetimer = 0;
+    // };
 
 
 };
@@ -112,7 +131,7 @@ function accelerometerError() {
     function increment(){
         if (updown == 0){
             time = time+1
-            min = parseInt(time/60)
+            min = parseInt(time/60);
             sec = time-(min*60)
             if(sec<10){
                 $(".time").html("<p>"+min+":"+"0"+sec+"</p>")
@@ -124,6 +143,17 @@ function accelerometerError() {
             timerGoing = true;
         }
         else if (updown == 1){
+            if(time == 0){
+                
+                if(restcheck == 0){
+                    time = rest
+                    restcheck = 1
+                }
+                else if(restcheck ==1){
+                    time = localStorage.getItem("time")
+                    restcheck = 0
+                }
+            };
             time = time-1
             min = parseInt(time/60)
             sec = time-(min*60)
