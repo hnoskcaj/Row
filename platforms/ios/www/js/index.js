@@ -146,12 +146,10 @@ function accelerometerError() {
             if(time == 0){
                 
                 if(restcheck == 0){
-                    alert("rest"+rest)
                     time = rest
                     restcheck = 1
                 }
                 else if(restcheck ==1){
-                    alert("time"+time)
                     time = localStorage.getItem("time")
                     restcheck = 0
                 }
