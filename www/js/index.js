@@ -20,7 +20,8 @@ $(document).ready(function(){
     var round = 0
     var rate = 0
     var avgrate = 0
-    var time;
+    var ratecount = 0
+    var time = 0
     var min = 0
     var sec = 0
     var updown = 0
@@ -38,6 +39,7 @@ $(document).ready(function(){
     var c = 0
     var rest = 0
     var restcheck = 0
+    var truetime = 0
 
 
     $("#settingSubmit").click(function(){
@@ -50,12 +52,13 @@ $(document).ready(function(){
         updown = 1
         localStorage.setItem("time", time);
         localStorage.setItem("rest", rest);
-        console.log(rest)
         // localStorage.setItem("upordown", updown);
     });
 
     time = localStorage.getItem("time");
+    truetime = time;
     rest = localStorage.getItem("rest");
+    
     // updown = localStorage.getItem("upordown");
 
     if (time > 0) {
@@ -65,8 +68,16 @@ $(document).ready(function(){
     }
    $(".time").html("<p>0:00</p>")
    $(".ratt").html("<p>0</p>")
+   $(".avgt").html("<p>"+"0"+"</p>");
    
 
+
+if(isNaN(time)){
+        time = 0
+    }
+if(time==null){
+    time = 0
+}
    $(".start").click(function(){
     // custominterval = document.getElementById("mins")*60+document.getElementById("mins");
     // alert(document.getElementById("mins"));
@@ -90,10 +101,6 @@ var watchID = navigator.accelerometer.watchAcceleration(
   accelerometerSuccess, accelerometerError, accelerometerOptions);
 
 function accelerometerSuccess(acceleration) {
-  // alert('Acceleration X: ' + x + '\n' +
-  //  'Acceleration Y: ' + y + '\n' +
-  //  'Acceleration Z: ' + z + '\n' +
-  //  'Timestamp: '      + acceleration.timestamp + '\n');
     x = acceleration.x;
     y = acceleration.y;
     z = acceleration.z;
@@ -107,12 +114,16 @@ function accelerometerSuccess(acceleration) {
         rate = 60/ratetimer;
         $(".ratt").html("<p>"+rate+"</p>");
         ratetimer = 0;
+        ratecount = ratecount + 1
+        if(updown == 0){
+        avgrate = ratecount/(time/60)
+        }
+        else if(updown == 1){
+            avgrate = ratecount/((truetime-time)/60)
+        }
+        $(".avgt").html("<p>"+avgrate+"</p>");
+
     };
-    // if((Math.abs(x)+Math.abs(y)+Math.abs(z))>15){
-    //     rate = 60/ratetimer;
-    //     $(".ratt").html("<p>"+rate+"</p>");
-    //     ratetimer = 0;
-    // };
 
 
 };
@@ -124,13 +135,13 @@ function accelerometerError() {
 
 
 
-
+console.log(time)
 
 
     interval = setInterval(increment,1000);
     function increment(){
         if (updown == 0){
-            time = time+1
+            time = parseInt(time)+1
             min = parseInt(time/60);
             sec = time-(min*60)
             if(sec<10){
@@ -148,6 +159,8 @@ function accelerometerError() {
                 if(restcheck == 0){
                     time = rest
                     restcheck = 1
+                    round = round + 1
+                    $(".roundt").html("<p>"+round+"</p>")
                 }
                 else if(restcheck ==1){
                     time = localStorage.getItem("time")
